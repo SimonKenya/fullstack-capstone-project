@@ -15,6 +15,7 @@ import RegisterPage from './components/RegisterPage/RegisterPage';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import Navbar from './components/Navbar/Navbar';
+import Profile from './components/Profile/Profile';
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
           <>
           <Navbar/>
           <Routes>
+            <Route path="/app/profile" element={<Profile/>} />
             <Route path="/" element={<MainPage />} />
             <Route path="/app" element={<MainPage />} />
             <Route path="/app/login" element={<LoginPage/>} />

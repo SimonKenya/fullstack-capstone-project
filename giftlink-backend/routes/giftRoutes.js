@@ -1,6 +1,7 @@
 /* jshint esversion: 8 */
 const express = require('express');
 const router = express.Router();
+const { ObjectId } = require('mongodb'); // Import ObjectId to handle _id
 const connectToDatabase = require('../models/db');
 const logger = require('../logger');
 
@@ -9,12 +10,11 @@ router.get('/', async (req, res, next) => {
     logger.info('/ called');
     try {
         const db = await connectToDatabase();
-
         const collection = db.collection("gifts");
         const gifts = await collection.find({}).toArray();
         res.json(gifts);
     } catch (e) {
-        logger.console.error('oops something went wrong', e);
+        logger.error('oops something went wrong', e); // Corrected logger usage
         next(e);
     }
 });
@@ -25,7 +25,9 @@ router.get('/:id', async (req, res, next) => {
         const db = await connectToDatabase();
         const collection = db.collection("gifts");
         const id = req.params.id;
-        const gift = await collection.findOne({ id: id });
+
+        // Convert string id to ObjectId for MongoDB lookup
+        const gift = await collection.findOne({ _id: new ObjectId(id) });
 
         if (!gift) {
             return res.status(404).send("Gift not found");
@@ -33,22 +35,14 @@ router.get('/:id', async (req, res, next) => {
 
         res.json(gift);
     } catch (e) {
+        logger.error('Error fetching gift by ID', e); // Improved error logging
         next(e);
     }
 });
-
 
 // Add a new gift
 router.post('/', async (req, res, next) => {
     try {
         const db = await connectToDatabase();
-        const collection = db.collection("gifts");
-        const gift = await collection.insertOne(req.body);
+        const
 
-        res.status(201).json(gift.ops[0]);
-    } catch (e) {
-        next(e);
-    }
-});
-
-module.exports = router;
